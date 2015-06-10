@@ -1,0 +1,2 @@
+module CommentLikeHelper
+end

@@ -1,0 +1,2 @@
+class CommentLikeController < ApplicationController
+end

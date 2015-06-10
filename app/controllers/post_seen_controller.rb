@@ -1,0 +1,2 @@
+class PostSeenController < ApplicationController
+end
