@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150603120542) do
+ActiveRecord::Schema.define(version: 20150609122856) do
 
   create_table "comment_likes", force: true do |t|
     t.integer  "comment_id", null: false
@@ -52,16 +52,21 @@ ActiveRecord::Schema.define(version: 20150603120542) do
   end
 
   create_table "posts", force: true do |t|
-    t.integer "user_id",              null: false
-    t.text    "caption",              null: false
-    t.text    "video_link",           null: false
-    t.text    "video_thumbnail_link", null: false
-    t.text    "image_link",           null: false
-    t.text    "video_angle",          null: false
-    t.string  "privacy",              null: false
-    t.integer "topic_id",             null: false
-    t.integer "reply_count",          null: false
-    t.string  "beam_type",            null: false
+    t.integer  "user_id",              null: false
+    t.text     "caption",              null: false
+    t.text     "video_link",           null: false
+    t.text     "video_thumbnail_link", null: false
+    t.text     "image_link",           null: false
+    t.text     "video_angle",          null: false
+    t.string   "privacy",              null: false
+    t.integer  "topic_id",             null: false
+    t.integer  "reply_count",          null: false
+    t.string   "beam_type",            null: false
+    t.integer  "mute",                 null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "filter",               null: false
+    t.integer  "video_length",         null: false
   end
 
   create_table "tags", force: true do |t|

@@ -1,5 +1,46 @@
 Rails.application.routes.draw do
-  post 'users/login'=>'users#login'
+   
+  #----------------------------------------------------------------------------------------------------------
+  #                             Routes of User API`s 
+  #-------------------------------------------------------------------------------------------------------------
+  post 'users/userLogin'=>'users#userLogin'
+  post 'users/userSignUp'=>'users#userSignUp'
+  post 'users/updateProfile'=>'users#updateProfile'
+
+  
+
+  #----------------------------------------------------------------------------------------------------------
+  #                             Routes of Post API`s 
+  #-------------------------------------------------------------------------------------------------------------
+  post 'posts/getPostById'=>'posts#getPostById'
+  post 'posts/getContentByTopic'=>'posts#getContentByTopic'
+  post 'posts/getHomeContent'=>'posts#getHomeContent'
+  post 'posts/getUserPost'=>'posts#getUserPost'
+  post 'posts/uploadStatus'=>'posts#uploadStatus'
+  post 'posts/getUserBeam'=>'posts#getUserBeam'
+  post 'posts/getMyChannel'=>'posts#getMyChannel'
+
+
+  
+
+
+  #----------------------------------------------------------------------------------------------------------
+  #                             Routes of Friend API`s 
+  #-------------------------------------------------------------------------------------------------------------
+  post 'friends/deleteFriend'=>'friends#deleteFriend'
+  post 'friends/acceptFriendRequest'=>'friends#acceptFriendRequest'
+  post 'friends/sendFriendRequest'=>'friends#sendFriendRequest'
+  post 'friends/deleteFriendRequest'=>'friends#deleteFriendRequest'
+  post 'friends/searchFriends'=>'friends#searchFriends'
+
+
+
+   
+
+  #----------------------------------------------------------------------------------------------------------
+  #                             Routes of Topic API`s 
+  #-------------------------------------------------------------------------------------------------------------
+   post 'topics/getAllTopics'=>'topics#getAllTopics'
 
 
 

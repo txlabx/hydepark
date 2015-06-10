@@ -1,7 +1,16 @@
 class User < ActiveRecord::Base
+	
 
-	validates :full_name, :profile_link, :profile_type,
-  	 :cover_link, :cover_type, :is_celeb, :session_token, :account_type, :last_login, :presence =>true
+	has_many :posts
+
+
+
+
+  #----------------------------------------------------------------------------------------------------------
+  #                          Database Insertion Validations
+  #-------------------------------------------------------------------------------------------------------------	validates :full_name, :profile_link, :profile_type,
+  	
+  	validates :full_name, :profile_link, :profile_type,:cover_link, :cover_type, :is_celeb, :session_token, :account_type, :last_login, :presence =>true
   	validates_length_of :password, :minimum => 6, :allow_blank => true 
   	#validates_date :date_of_birth, :before => lambda{Time.now.strftime("%Y-%m-%d")}, :allow_blank => true
 
@@ -12,44 +21,159 @@ class User < ActiveRecord::Base
 	validates_inclusion_of :gender, :in => ['MALE', 'FEMALE', 'OTHER', ''], :message => "Invalid gender"
 	validates_inclusion_of :account_type, :in => ['CUSTOM', 'FACEBOOK', 'TWITTER', 'GOOGLE_PLUS', 'INSTAGRAM'], :message => "Invalid account_type"
 	
-#----------------------------------------------------------------------------------------------------
+
+
+  #----------------------------------------------------------------------------------------------------------
+  #                           Validate Session Token From 'users' table 
+  #-------------------------------------------------------------------------------------------------------------
+
+	def self.validate_session_token(session_token)
+		user = User.where(session_token: session_token).first
+		if(user.blank?)
+			return false
+		else
+			return user
+		end
+
+	end
+
+
+  #----------------------------------------------------------------------------------------------------------
+  #                             Get Profile form 'users' Table 
+  #-------------------------------------------------------------------------------------------------------------
 	def self.getProfile(user)
 
-		
+		#begin
+				
+				if(user[:profile_type] == 'IMAGE')
+					user[:'profile_link'] = "#{ENV['IMAGE_PATH']}/#{user[:profile_link]}"
+					#hash.update(hash){ |k,v| "%#{image_path}%" }
+				elsif(user[:profile_type] == 'VIDEO')
+					user[:profile_link] = "#{ENV['VIDEO_PATH']}/#{user[:profile_link]}"
+					#hash.update(hash){ |k,v| "%#{video_path}%" }
+					#user.replace(h_image)
+				end
 
-		if(user[:profile_type] == 'IMAGE')
-			user[:'profile_link'] = "#{ENV['IMAGE_PATH']}/#{user[:profile_link]}"
-			#hash.update(hash){ |k,v| "%#{image_path}%" }
-		elsif(user[:profile_type] == 'VIDEO')
-			user[:profile_link] = "#{ENV['VIDEO_PATH']}/#{user[:profile_link]}"
-			#hash.update(hash){ |k,v| "%#{video_path}%" }
-			#user.replace(h_image)
+				if(user[:cover_type] == 'IMAGE')
+					user[:cover_link] = "#{ENV['IMAGE_PATH']}/#{user[:cover_link]}"
+				elsif(user[:cover_type] == 'VIDEO')
+					user[:cover_link] = "#{ENV['VIDEO_PATH']}/#{user[:cover_link]}"
+				end
+		 		user = user.as_json 
+		 		
+				user.delete('password')
+				return user
+		#rescue Exception => e
+		#	return {'status'=>'failure', 'message'=>e.message}
+		#end
+	end
+  
+  #----------------------------------------------------------------------------------------------------------
+  #                            Update Profile in 'users' Table 
+  #-------------------------------------------------------------------------------------------------------------
+
+	def self.updateProfile(params)
+		begin
+			session_token = params.fetch(:session_token)
+			user = validate_session_token(session_token)
+			if(!user)
+				return {'status'=>'failure', 'message'=>'Invalid session_token'}
+			end
+
+
+			str = ''
+			allowed_params = ['full_name', 'is_celeb', 'date_of_birth', 'gender', 'city', 'country']
+			params.each do |key, value|
+				if(allowed_params.include?(key))
+					user[key] = value
+				end
+			end
+
+
+			if(params.has_key?(:profile_link) && !params[:profile_link].blank?)
+					profile_link = params[:profile_link]
+				  	if(profile_link.class.name.demodulize == "UploadedFile")
+				  		profile_link_name = SecureRandom.hex+File.extname(profile_link.original_filename)
+				  		if(profile_link.content_type.split('/')[0] == 'image')
+				  			profile_type = "IMAGE"
+				  			if File.exist?(Rails.root.join('app', 'assets', 'images', user[:profile_link]))
+				  				File.delete(Rails.root.join('app', 'assets', 'images', user[:profile_link]))
+				  			end
+					  		File.open(Rails.root.join('app', 'assets', 'images', profile_link_name), 'wb') do |file|
+								file.write(profile_link.read)
+							end
+						elsif(profile_link.content_type.split('/')[0] == 'video')
+							profile_type = "VIDEO"
+							if File.exist?(Rails.root.join('app', 'assets', 'videos', user[:profile_link]))
+				  				File.delete(Rails.root.join('app', 'assets', 'videos', user[:profile_link]))
+				  			end
+							File.open(Rails.root.join('app', 'assets', 'videos', profile_link_name), 'wb') do |file|
+								file.write(profile_link.read)
+							end
+						else
+							raise 'profile_link should be a video or image'
+						end
+						profile_link = profile_link_name
+						user[:profile_link] = profile_link
+						user[:profile_type] = profile_type
+				  	else
+				  		raise 'profile_link should be a file'
+				  	end
+			end
+
+			if(params.has_key?(:cover_link) && !params.blank?(:cover_link))
+					cover_link = params[:cover_link]
+				  	if(cover_link.class.name.demodulize == "UploadedFile")
+				  		cover_link_name = SecureRandom.hex+File.extname(cover_link.original_filename)
+				  		if(cover_link.content_type.split('/')[0] == 'image')
+				  			cover_type = 'IMAGE'
+				  			if File.exist?(Rails.root.join('app', 'assets', 'images', user[:cover_link]))
+				  				File.delete(Rails.root.join('app', 'assets', 'images', user[:cover_link]))
+				  			end
+					  		File.open(Rails.root.join('app', 'assets', 'images', cover_link_name), 'wb') do |file|
+								file.write(cover_link.read)
+							end
+						elsif(cover_link.content_type.split('/')[0] == 'video')
+							cover_type = 'VIDEO'
+							if File.exist?(Rails.root.join('app', 'assets', 'videos', user[:cover_link]))
+				  				File.delete(Rails.root.join('app', 'assets', 'videos', user[:cover_link]))
+				  			end
+							File.open(Rails.root.join('app', 'assets', 'videos', cover_link_name), 'wb') do |file|
+								file.write(cover_link.read)
+							end
+						else
+							raise 'cover_link should be a video or image'
+						end
+						cover_link = cover_link_name
+						user[:cover_link] = cover_link
+						user[:cover_type] = cover_type
+				  	else
+				  		raise 'profile_link should be a file'
+				  	end
+			end
+			
+			if(user.save)
+			  	return {'status'=>'ok', 'message'=>'User successfully updated'}
+			else
+			  	message = ""
+			  	user.errors.messages.each do |msg_field|
+			  		msg_field.each do |msg|
+			  			message = "#{message} #{msg} " 
+			  		end
+			  	end
+			  	return {'status'=>'failure', 'message'=>message}
+			end
+
+
+		rescue Exception => e
+			return {'status'=>'failure', 'message'=>e.message}
 		end
 
-		if(user[:cover_type] == 'IMAGE')
-			user[:cover_link] = "#{ENV['IMAGE_PATH']}/#{user[:cover_link]}"
-		elsif(user[:cover_type] == 'VIDEO')
-			user[:cover_link] = "#{ENV['VIDEO_PATH']}/#{user[:cover_link]}"
-		end
- 		user = user.as_json 
- 		
-		user.delete('password')
-		return user
 	end
-
-#----------------------------------------------------------------------------------------------------
-
-	def validate_session_token
-		
-	end
-
-#----------------------------------------------------------------------------------------------------
-
-	def updateProfile
-		
-	end
-
-#----------------------------------------------------------------------------------------------------
+  
+  #----------------------------------------------------------------------------------------------------------
+  #                            User Sign In from 'users' Table 
+  #-------------------------------------------------------------------------------------------------------------
 
 	def self.userSignIn(params)
 		begin
@@ -70,8 +194,10 @@ class User < ActiveRecord::Base
 		end
 	end
 
-#----------------------------------------------------------------------------------------------------
-
+  #----------------------------------------------------------------------------------------------------------
+  #                             User Registration in 'users' Table 
+  #-------------------------------------------------------------------------------------------------------------
+	
 	def self.registerUser(params)
 		begin
 		  full_name = params.fetch(:full_name)
@@ -166,6 +292,11 @@ class User < ActiveRecord::Base
 		end
 	end
 
-#----------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------
 
 end
+
+
+#----------------------------------------------------------------------------------------------------------
+#                                     End Of User Module
+#-------------------------------------------------------------------------------------------------------------
