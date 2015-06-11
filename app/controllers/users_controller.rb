@@ -7,4 +7,8 @@ class UsersController < ApplicationController
 	def userLogin
 		render json: User.userSignIn(params)
 	end
+
+	def updateProfile
+		render json: User.updateProfile(params)
+	end
 end
