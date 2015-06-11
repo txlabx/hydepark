@@ -4,8 +4,13 @@ class User < ActiveRecord::Base
 	has_many :posts
 
 
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
   #----------------------------------------------------------------------------------------------------------
   #                          Database Insertion Validations
   #-------------------------------------------------------------------------------------------------------------	validates :full_name, :profile_link, :profile_type,
@@ -43,7 +48,11 @@ class User < ActiveRecord::Base
   #-------------------------------------------------------------------------------------------------------------
 	def self.getProfile(user)
 
+<<<<<<< HEAD
 		begin
+=======
+		#begin
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
 				
 				if(user[:profile_type] == 'IMAGE')
 					user[:'profile_link'] = "#{ENV['IMAGE_PATH']}/#{user[:profile_link]}"
@@ -63,9 +72,15 @@ class User < ActiveRecord::Base
 		 		
 				user.delete('password')
 				return user
+<<<<<<< HEAD
 		rescue Exception => e
 			return {'status'=>'failure', 'message'=>e.message}
 		end
+=======
+		#rescue Exception => e
+		#	return {'status'=>'failure', 'message'=>e.message}
+		#end
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
 	end
   
   #----------------------------------------------------------------------------------------------------------
@@ -80,6 +95,7 @@ class User < ActiveRecord::Base
 				return {'status'=>'failure', 'message'=>'Invalid session_token'}
 			end
 
+<<<<<<< HEAD
 
 			str = ''
 			allowed_params = ['full_name', 'is_celeb', 'date_of_birth', 'gender', 'city', 'country']
@@ -90,6 +106,18 @@ class User < ActiveRecord::Base
 			end
 
 
+=======
+
+			str = ''
+			allowed_params = ['full_name', 'is_celeb', 'date_of_birth', 'gender', 'city', 'country']
+			params.each do |key, value|
+				if(allowed_params.include?(key))
+					user[key] = value
+				end
+			end
+
+
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
 			if(params.has_key?(:profile_link) && !params[:profile_link].blank?)
 					profile_link = params[:profile_link]
 				  	if(profile_link.class.name.demodulize == "UploadedFile")

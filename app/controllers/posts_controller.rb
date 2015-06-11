@@ -23,6 +23,7 @@ class PostsController < ApplicationController
 	def getMyChannel
 			render json: Post.myChannel(params)
 	end
+<<<<<<< HEAD
 	def getMyChannel
 			render json: Post.myChannel(params)
 	end
@@ -32,6 +33,8 @@ class PostsController < ApplicationController
 	
 
 
+=======
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
 
 
 end

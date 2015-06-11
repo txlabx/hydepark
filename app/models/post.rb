@@ -1,4 +1,5 @@
 class Post < ActiveRecord::Base
+<<<<<<< HEAD
 
 
 	has_many :post_likes
@@ -48,9 +49,60 @@ class Post < ActiveRecord::Base
 			end
 	end
 
+=======
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
 
+
+	has_many :post_likes
+	has_many :post_seens
+	has_many :comments
+	has_many :tags
+	belongs_to :topic
+	belongs_to :user
+
+	#----------------------------------------------------------------------------------------------------------
+	#                                 Validate Session Token From "users" Table 
+	#----------------------------------------------------------------------------------------------------------
+	def self.validate_session_token(session_token)
+		
+		begin
+			user = User.where(session_token: session_token).first
+			if(user.blank?)
+				return {"success"=>0,"message"=> "Session_Token is Not Correct."}
+			else
+				return user
+			end
+
+		rescue Exception => e
+		
+			return {"success"=>0, 'message'=>e.message}
+		end
+	end
 	
 
+<<<<<<< HEAD
+=======
+	#----------------------------------------------------------------------------------------------------------
+	#                                 Validate Topic Id From "topics" Table 
+	#----------------------------------------------------------------------------------------------------------
+	def self.validate_topic_id(topic_id)
+			
+			begin
+				topic = Topic.where(id: topic_id).first
+				
+				if(topic.blank?)
+					return false
+				else
+					return topic
+				end
+
+			rescue Exception => e
+		
+				return {"success"=>0, 'message'=>e.message}
+			end
+	end
+
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
 
 	#----------------------------------------------------------------------------------------------------------
 	#                                    Get Post By Id 
@@ -58,6 +110,10 @@ class Post < ActiveRecord::Base
 	def self.postById(params)
 		
 		begin
+<<<<<<< HEAD
+=======
+				img=ActionController::Base.helpers.image_path("")
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
 				params.require(:id)
 				params.require(:session_token)
 
@@ -247,6 +303,7 @@ class Post < ActiveRecord::Base
 
 		        
 
+<<<<<<< HEAD
 		        friends=Friend.find_by_sql("SELECT f.friend_id, u.full_name,
 									         u.email, u.profile_link, u.cover_link, u.is_celeb 
 									         FROM friends f 
@@ -258,11 +315,18 @@ class Post < ActiveRecord::Base
 
 
 	       	   	qeury=qeury1|qeury2
+=======
+	          	qeury=qeury1|qeury2
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
 
 				if qeury.blank?
 					return {"success"=>0 , "message"=>"There are no posts to show"}
 				else
+<<<<<<< HEAD
 					return {"success"=>1, "posts"=>qeury, "friends"=>friends}
+=======
+					return {"success"=>1, "posts"=>qeury}
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
 				end
 			
 			rescue Exception => e
@@ -394,6 +458,7 @@ def self.uploadStatus(params)
 				else
 					raise 'Missing parameter video_thumbnail_link'
 				end
+<<<<<<< HEAD
 			#video rotation
                     #params['video_angle' += 90;
                     #cmd = "ffmpeg -i temp/'#{temp_name}' -vf scale=iw:ih,rotate='#{params[:video_angle]}'*PI/180:bilinear=0 videos/1'#{filename}'";
@@ -405,6 +470,9 @@ def self.uploadStatus(params)
                     #unlink("videos/1'#{filename}'");
                     #unlink("temp/'#{temp_name}'");
 
+=======
+			
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
 			#elsif(params.has_key?(:audio_link) && !params[:audio_link].blank?)#audio and image
 			#	if(params.has_key?(:image_link) && !params[:image_link].blank?)
 			#		image_link = params[:image_link]
@@ -577,7 +645,11 @@ def self.uploadStatus(params)
         		
 
 		        qeury=Post.find_by_sql("SELECT p.id, p.user_id, 
+<<<<<<< HEAD
 					concat('#{ENV['LOCAL_PATH']}', u.profile_link) as profile_link,u.full_name,u.is_celeb, 
+=======
+					concat('#{ENV['LOCAL_PATH']}', u.profile_link) as profile_link,u.full_name, 
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
 					CASE WHEN p.video_link != ''
 					THEN concat('#{ENV['LOCAL_PATH']}', p.video_link) 
 					ELSE p.video_link 
@@ -618,6 +690,7 @@ def self.uploadStatus(params)
 			end
 	end
 
+<<<<<<< HEAD
 	#----------------------------------------------------------------------------------------------------------
 	#                                Get Trending Videos
 	#----------------------------------------------------------------------------------------------------------
@@ -676,6 +749,9 @@ def self.uploadStatus(params)
 				return {"success"=>0, 'message'=>e.message}
 			end
 	end
+=======
+
+>>>>>>> d0b6b13e89368c5e0cc92f28befc0e85c62d04f9
 
 
 #-------------------------------------------------------------------------------------------------------------
